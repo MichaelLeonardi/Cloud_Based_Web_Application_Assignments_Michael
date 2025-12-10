@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     await prisma.leaderboard.delete({
       where: { id },
@@ -25,33 +25,32 @@ export async function DELETE(
 }
 
 export async function PUT(
-    request: Request,
-    { params }: { params: { id: string } }
-  ) {
-    try {
-      const { id } = params;
-      const body = await request.json();
-      const { playerName } = body;
-  
-      if (!playerName) {
-        return NextResponse.json(
-          { error: "Player name is required" },
-          { status: 400 }
-        );
-      }
-  
-      const updatedEntry = await prisma.leaderboard.update({
-        where: { id },
-        data: { playerName },
-      });
-  
-      return NextResponse.json(updatedEntry);
-    } catch (error) {
-      console.error("PUT /api/leaderboard/:id error:", error);
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const body = await request.json();
+    const { playerName } = body;
+
+    if (!playerName) {
       return NextResponse.json(
-        { error: "Failed to update entry" },
-        { status: 500 }
+        { error: "Player name is required" },
+        { status: 400 }
       );
     }
+
+    const updatedEntry = await prisma.leaderboard.update({
+      where: { id },
+      data: { playerName },
+    });
+
+    return NextResponse.json(updatedEntry);
+  } catch (error) {
+    console.error("PUT /api/leaderboard/:id error:", error);
+    return NextResponse.json(
+      { error: "Failed to update entry" },
+      { status: 500 }
+    );
   }
-  
+}

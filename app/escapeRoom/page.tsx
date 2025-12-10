@@ -10,7 +10,6 @@ export default function EscapeRoomPage() {
 
   const [minutes, setMinutes] = useState(5);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [initialTime, setInitialTime] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
 
   const [playerName, setPlayerName] = useState("");
@@ -48,11 +47,12 @@ export default function EscapeRoomPage() {
       const res = await fetch("/api/leaderboard");
       const data = await res.json();
       const sorted = data.sort(
-        (a: any, b: any) => a.timeTaken - b.timeTaken
-      );
+        (a: { timeTaken: number }, b: { timeTaken: number }) =>
+          a.timeTaken - b.timeTaken
+      );      
       setLeaderboard(sorted);
     } catch (err) {
-      console.error("Failed to load leaderboard");
+      console.error("Failed to load leaderboard", error);
     } finally {
       setLoadingLeaderboard(false);
     }
@@ -81,6 +81,7 @@ export default function EscapeRoomPage() {
 
   useEffect(() => {
     fetchLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ---------------- TIMER ----------------
@@ -92,8 +93,11 @@ export default function EscapeRoomPage() {
   }, [timerRunning, timeLeft]);
 
   useEffect(() => {
-    if (timeLeft === 0 && timerRunning) endGame("fail");
-  }, [timeLeft, timerRunning]);
+    if (timeLeft === 0 && timerRunning) {
+      endGame("fail");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, timerRunning]);  
 
   // ---------------- GAME FLOW ----------------
 
@@ -107,7 +111,6 @@ export default function EscapeRoomPage() {
     if (total <= 0) return;
 
     setStartTime(Date.now());
-    setInitialTime(total);
     setTimeLeft(total);
     setTimerRunning(true);
     setGameStarted(true);
@@ -138,8 +141,8 @@ export default function EscapeRoomPage() {
         });
 
         fetchLeaderboard();
-      } catch (err) {
-        console.error("Failed to save leaderboard:", err);
+      } catch (error) {
+        console.error("Failed to save leaderboard:", error);
       }
     }
   };
@@ -153,7 +156,6 @@ export default function EscapeRoomPage() {
     setInventory([]);
     setActiveStage(null);
     setTimeLeft(0);
-    setInitialTime(0);
     setPlayerName("");
     setStage1Input("");
     setStage2Input("");
@@ -611,7 +613,7 @@ function Modal({
 
 /* ================= STYLES ================= */
 
-const pageWrap = {
+const pageWrap: React.CSSProperties = {
   backgroundImage: "url('/EscapeRoom.jpg')",
   backgroundSize: "cover",
   backgroundPosition: "center",
@@ -620,32 +622,32 @@ const pageWrap = {
   position: "relative",
 };
 
-const darkOverlay = {
-  position: "absolute" as const,
+const darkOverlay: React.CSSProperties = {
+  position: "absolute",
   inset: 0,
   background: "rgba(0,0,0,0.25)",
 };
 
-const uiLayer = {
-  position: "relative" as const,
+const uiLayer: React.CSSProperties = {
+  position: "relative",
   padding: "2rem",
   color: "white",
 };
 
-const hud = {
+const hud: React.CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   marginBottom: "16px",
 };
 
-const timerBox = {
+const timerBox: React.CSSProperties = {
   background: "rgba(0,0,0,0.55)",
   padding: "10px 18px",
   borderRadius: "14px",
   fontWeight: 700,
 };
 
-const setupCard = {
+const setupCard: React.CSSProperties = {
   background: "white",
   padding: "28px",
   borderRadius: "18px",
@@ -653,15 +655,15 @@ const setupCard = {
   color: "black",
 };
 
-const setupInput = {
+const setupInput: React.CSSProperties = {
   width: "100%",
   height: "42px",
   marginBottom: "16px",
   fontSize: "18px",
 };
 
-const overlay = {
-  position: "fixed" as const,
+const overlay: React.CSSProperties = {
+  position: "fixed",
   inset: 0,
   background: "rgba(0,0,0,0.35)",
   display: "flex",
@@ -670,18 +672,18 @@ const overlay = {
   zIndex: 50,
 };
 
-const modalCard = {
+const modalCard: React.CSSProperties = {
   background: "white",
   color: "black",
   padding: "30px",
   borderRadius: "20px",
   width: "540px",
   display: "flex",
-  flexDirection: "column" as const,
+  flexDirection: "column",
   gap: "14px",
 };
 
-const codeBox = {
+const codeBox: React.CSSProperties = {
   width: "100%",
   height: "140px",
   fontSize: "15px",
@@ -689,7 +691,7 @@ const codeBox = {
   fontFamily: "monospace",
 };
 
-const primaryBtn = {
+const primaryBtn: React.CSSProperties = {
   background: "#2ecc71",
   color: "white",
   padding: "12px",
@@ -699,7 +701,7 @@ const primaryBtn = {
   cursor: "pointer",
 };
 
-const hintBtn = {
+const hintBtn: React.CSSProperties = {
   background: "#f1c40f",
   color: "white",
   padding: "8px",

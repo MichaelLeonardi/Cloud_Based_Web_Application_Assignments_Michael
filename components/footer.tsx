@@ -1,6 +1,4 @@
 export default function Footer({
-    studentName,
-    studentNumber,
   }: {
     studentName: "string";
     studentNumber: string;
