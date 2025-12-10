@@ -29,3 +29,5 @@ next-env.d.ts
 # editor settings (optional but recommended)
 /.vscode
 .idea
+
+/app/generated/prisma
