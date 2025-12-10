@@ -29,7 +29,7 @@ export default function Header({ studentNumber }: { studentNumber: string }) {
   const links = [
     { href: "/", label: "Tabs" },
     { href: "/about", label: "About" },
-    { href: "/escaperoom", label: "Escape Room" },
+    { href: "/escapeRoom", label: "Escape Room" },
     { href: "/codingraces", label: "Coding Races" },
     { href: "/courtroom", label: "Court Room" },
   ];
