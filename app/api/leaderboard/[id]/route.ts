@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { logInfo, logError, logPerf } from "@/lib/logger";
 
 const prisma = new PrismaClient();
 
