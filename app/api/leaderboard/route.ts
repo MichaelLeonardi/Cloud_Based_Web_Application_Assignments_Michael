@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { logInfo, logError, logPerf } from "@/lib/logger";
 
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
+  const start = performance.now();
+
   try {
     const body = await request.json();
     const { playerName, timeTaken, status } = body;
+
+    logInfo("POST /api/leaderboard called", body);
 
     if (!playerName || !timeTaken || !status) {
       return NextResponse.json(
@@ -23,9 +28,12 @@ export async function POST(request: Request) {
       },
     });
 
+    const duration = performance.now() - start;
+    logPerf("POST /api/leaderboard", Math.round(duration));
+
     return NextResponse.json(newEntry, { status: 201 });
   } catch (error) {
-    console.error("POST /api/leaderboard error:", error);
+    logError("POST /api/leaderboard error", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -34,20 +42,26 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-    try {
-      const leaderboard = await prisma.leaderboard.findMany({
-        orderBy: {
-          timeTaken: "asc",
-        },
-      });
-  
-      return NextResponse.json(leaderboard, { status: 200 });
-    } catch (error) {
-      console.error("GET /api/leaderboard error:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch leaderboard" },
-        { status: 500 }
-      );
-    }
+  const start = performance.now();
+
+  try {
+    logInfo("GET /api/leaderboard called");
+
+    const leaderboard = await prisma.leaderboard.findMany({
+      orderBy: {
+        timeTaken: "asc",
+      },
+    });
+
+    const duration = performance.now() - start;
+    logPerf("GET /api/leaderboard", Math.round(duration));
+
+    return NextResponse.json(leaderboard, { status: 200 });
+  } catch (error) {
+    logError("GET /api/leaderboard error", error);
+    return NextResponse.json(
+      { error: "Failed to fetch leaderboard" },
+      { status: 500 }
+    );
   }
-  
+}
